@@ -2,30 +2,18 @@
   "notes": [
     {
       "id": 1,
-      "title": "Listes de course",
-      "body": "Du lait, des céréales, du popcorn et ...",
-      "date": "17/11/2023 12:21:56"
+      "body": "write your memories here",
+      "title": "This is a new note",
+      "date": "27/12/2023"
     },
     {
       "id": 2,
-      "title": "Devoir a fer",
-      "body": "Tp web api, unity, c prj",
-      "date": "17/11/2023 12:22:37"
-    },
-    {
-      "id": 3,
-      "title": "Idée de musike",
-      "body": "Zimbra est chargé, zimbra est chargé, zimbra est chargé, j'ai dit zimbra est chargé, va chercher le café, ...",
-      "date": "17/11/2023 12:27:12"
-    },
-    {
-      "id": 4,
-      "title": "lien important",
-      "body": "https://fr.react.dev/",
-      "date": "17/11/2023 12:29:06"
+      "body": "write your memories here",
+      "title": "This is a second new note",
+      "date": "27/12/2023"
     }
   ],
   "profiles": {
-    "name": "Melv"
+    "name": "Melvin"
   }
 }

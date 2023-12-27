@@ -1,51 +1,30 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
+import { FeedPlusIcon } from '@primer/octicons-react';
+
+class Note {
+  constructor(title, body) {
+    this.title = title;
+    this.body = body;
+  }
+}
 
 function App() {
-  const [notes, setNotes] = useState(null);
-  const [profiles, setProfile] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [notes, setNotes] = useState([]);
+  const [profile, setProfile] = useState("anonyme");
+  const [currentIndex, setCurrentIndex] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [editedTitle, setEditedTitle] = useState("");
-  const newNote = {
-    id: 0,
-    title: "New note",
-    body: "Write something here...",
-    date: new Date().toLocaleString(),
-  };
+  const noteTemplate = new Note("This is a new note", "write your memories here");
 
   const onAddNote = async () => {
-    let previousId = 0;
-
-    if (notes.length > 0) {
-      previousId = notes[notes.length - 1].id;
-    }
-    try {
-      newNote.id = previousId + 1
-      const resp = await fetch("/notes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newNote),
-      });
-
-      if (resp.ok) {
-        const updatedNotes = [...notes, newNote];
-        setNotes(updatedNotes);
-        setCurrentIndex(updatedNotes.length - 1);
-      } else {
-        console.log("An error occurred during the request: @+onAddNote");
-      }
-    } catch (error) {
-      console.error("An error occurred during the request: @+onAddNote-try", error);
-    }
+    setCurrentIndex(notes.length + 1);
+    onEditNote(true);
   };
 
   const onDeleteNote = async () => {
-
     if (notes[currentIndex] == null) { return; }
     const confirmed = window.confirm("Are you sure to remove this note ?");
 
@@ -84,77 +63,139 @@ function App() {
       console.error("An error occurred during the request: @+onDeleteNote-try", error);
     }
   };
-  const onEditNote = () => {
-    if (notes[currentIndex] == null) { return; }
+
+  const onEditNote = (isNewNote) => {
+    if (isNewNote == true) {
+      setEditedContent(noteTemplate.body);
+      setEditedTitle(noteTemplate.title);
+    } else if (currentIndex == null) { return; } else {
+      setEditedContent(notes[currentIndex].body);
+      setEditedTitle(notes[currentIndex].title);
+    }
     setIsEditing(true);
-    setEditedContent(notes[currentIndex].body);
-    setEditedTitle(notes[currentIndex].title);
+  };
+
+  const onSaveNote = async () => {
+    try {
+      if (currentIndex !== null) {
+        const updatedNotes = [...notes];
+        if (currentIndex > updatedNotes.length) {
+          const updatedNotes = [...notes];
+
+          console.log(currentIndex);
+          console.log(updatedNotes.length);
+          if (currentIndex > updatedNotes.length) {
+            updatedNotes.push({ "id": currentIndex, "body": "t", title: "te", "date": new Date().toLocaleDateString() });
+          }
+          console.log(notes.length);
+
+          updatedNotes[currentIndex - 1].body = editedContent;
+          updatedNotes[currentIndex - 1].title = editedTitle;
+          updatedNotes[currentIndex - 1].date = new Date().toLocaleDateString();
+
+          setNotes(updatedNotes);
+
+          await fetch(`/notes`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedNotes[currentIndex - 1]),
+          });
+
+          setIsEditing(false);
+        } else {
+          updatedNotes[currentIndex].body = editedContent;
+          updatedNotes[currentIndex].title = editedTitle;
+          updatedNotes[currentIndex].date = new Date().toLocaleDateString();
+
+          setNotes(updatedNotes);
+
+          await fetch(`/notes/${updatedNotes[currentIndex].id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedNotes[currentIndex]),
+          });
+
+          setIsEditing(false);
+        }
+      } else {
+        console.log("notes do not exist");
+        console.log(notes.length);
+        console.log(currentIndex);
+      }
+    } catch (error) {
+      console.error('Error saving note:', error);
+    }
   };
 
   const onClickNote = (id) => {
-    setCurrentIndex(id - 1);
+    const clickedNoteIndex = notes.findIndex((note) => note.id === id);
+    setCurrentIndex(clickedNoteIndex);
+    setIsEditing(false);
   };
 
-  useEffect(function () {
-    (async () => {
-      const notesResponse = await fetch("/notes");
-      const notesData = await notesResponse.json();
-      setNotes(notesData);
-    })();
+  useEffect(() => {
+    console.log("useEffect();");
+    const fetchData = async () => {
+      try {
+        console.log("notes fetching");
+        const notesResponse = await fetch('/notes');
+        const notesData = await notesResponse.json();
+        setNotes(notesData);
 
-    (async () => {
-      const profileResponse = await fetch("/profiles");
-      const profileData = await profileResponse.json();
-      setProfile(profileData.name);
-    })();
-  }, []);
-
-
-  const onSaveNote = async () => {
-    const updatedNotes = [...notes];
-    const updatedNote = { ...updatedNotes[currentIndex], body: editedContent, title: editedTitle };
-    updatedNotes[currentIndex] = updatedNote;
-
-    setNotes(updatedNotes);
-
-    try {
-      const resp = await fetch(`/notes/${updatedNote.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedNote),
-      });
-
-      if (resp.ok) {
-        setIsEditing(false);
-      } else {
-        console.log("An error occurred during the request: @+onSaveNote");
+        console.log("profiles fetching");
+        const profilesResponse = await fetch('/profiles');
+        const profilesData = await profilesResponse.json();
+        setProfile(profilesData);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données :', error);
       }
-    } catch (error) {
-      console.error("An error occurred during the request: @+onSaveNote-try", error);
-    }
-  };
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
       <aside className="Side">
         <div className="TitrePage">ZiNotes</div>
         <button className="AjoutNote" onClick={onAddNote}>
-          +
+          <FeedPlusIcon size={32} />
         </button>
-        <div className="ProfileName">Hi, {profiles}</div>
-        {notes !== null
-          ? notes.slice().reverse().map((note, index) => (
-            <div key={index} onClick={() => onClickNote(note.id)}>
+        <div className="ProfileName">Hi, {profile.name}</div>
+        {notes && notes.length > 0 ? (
+          notes.slice().reverse().map((note) => (
+            <div className="notebox" key={note.id} onClick={() => onClickNote(note.id)}>
               <div className="Titles">
                 {note.title}
                 <div className="Creation">{note.date}</div>
-                <div className="Id">{note.id}</div>
+                <div className="Id">ID: {note.id}</div>
               </div>
             </div>
           ))
-          : <div>click here to create your first note !</div>}
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            Click <a onClick={() => { onAddNote(); }}>here</a> to create your first note!
+          </div>
+        )}
+
+        <div className="BottomButtonDiv">
+          {isEditing ? (
+            <button className="BottomButton" onClick={onSaveNote}>
+              Save
+            </button>
+          ) : (
+            <button className="BottomButton" onClick={onEditNote}>
+              Modify
+            </button>
+          )}
+          <button className="BottomButton" onClick={onDeleteNote}>
+            Delete
+          </button>
+        </div>
       </aside>
 
       <main className="Main">
@@ -176,11 +217,9 @@ function App() {
           ) : (
             <div>no note here</div>
           )}
-
-
         </div>
-        <div>
 
+        <div>
           {notes !== null ? (
             <div className="NotesContent">
               {isEditing ? (
@@ -190,7 +229,7 @@ function App() {
                   onChange={(e) => setEditedContent(e.target.value)}
                 />
               ) : (
-                notes[currentIndex]?.body !== null
+                notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
                   ? notes[currentIndex]?.body
                   : "You need to create your first note"
               )}
@@ -198,20 +237,6 @@ function App() {
           ) : (
             <div>no note here</div>
           )}
-
-          {isEditing ? (
-            <button className="SaveButton" onClick={onSaveNote}>
-              Save
-            </button>
-          ) : (
-            <button className="SaveButton" onClick={onEditNote}>
-              Modify
-            </button>
-          )}
-
-          <button className="DelButton" onClick={onDeleteNote}>
-            Delete
-          </button>
         </div>
       </main>
     </>

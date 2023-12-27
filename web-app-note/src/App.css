@@ -4,9 +4,9 @@
   top: 0px;
   left: 0px;
   bottom: 0px;
-  margin-left: 15px;
-  padding-top: 100px;
-  padding-bottom: 100px;
+  margin-left: 0px;
+  padding-top: 25px;
+  padding-bottom: 0px;
   display: flex;
   flex-direction: column;
   background-color: rgb(29, 35, 39);
@@ -18,38 +18,24 @@
 }
 
 .TitrePage{
-  position: fixed;
   font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-style: normal;
   font-size: 20px;
   font-weight: bold;
-  top: 15px;
-  left: 25px;
+  text-align: center;
 }
 
 .AjoutNote {
-  position: fixed;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  font-style: normal;
-  font-size: 15px;
-  font-weight: bold;
-  top: 17px;
-  left: 320px;
-  border-radius: 50%;
-  border-style: solid;
-  border-color: rgb(63, 90, 100);
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  background-color: rgb(34, 48, 53);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.5s;
+  background: none;
+color: inherit;
+border: none;
+padding-top: 25px;
+font: inherit;
+cursor: pointer;
+outline: inherit;
 }
 
-.AjoutNote:hover {
-  background-color: rgb(63, 90, 100);
-}
+
 
 .ProfileName{
   position: fixed;
@@ -57,7 +43,7 @@
   font-style: normal;
   font-size: 20px;
   font-weight: bold;
-  bottom: 15px;
+  top: 15px;
   right: 15px;
 }
 
@@ -68,7 +54,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   padding: 15px;
-  margin-top: 15px;
+  margin-top: 5px;
   background-color: rgb(34, 48, 53);
 }
 
@@ -91,13 +77,13 @@
 
 .NotesContent{
   position: absolute;
-  top: 150px;
-  left: 200px;
+  top: 75px;
+  left: 120px;
   background-color: rgb(54, 62, 68);
   padding: 15px;
-  width: 1310px;
+  width: 1550px;
   border-radius: 15px;
-  height: 670px;
+  height: 850px;
   font-size: 20px;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
@@ -105,8 +91,8 @@
 .NotesContentTitle{
   position: absolute;
   width: 1300px;
-  top: 65px;
-  left: 200px;
+  top: 30px;
+  left: 130px;
   font-size: 30px;
   font-weight: bold;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -131,7 +117,7 @@
   font-size: 20px;
   position: fixed;
   border: none;
-  width: 1280px;
+  width: 1550px;
   height: 640px;
   border-color: none;
   background-color: rgb(54, 62, 68);
@@ -140,47 +126,20 @@
   resize: none;
 }
 
-.SaveButton {
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  font-style: normal;
-  font-size: 15px;
-  font-weight: bold;
-  position: fixed;
-  bottom: 50px;
-  left: 20%;
-  border-style: solid;
-  border-radius: 5px;
-  border-color: rgb(63, 90, 100);
-  background-color: rgb(34, 48, 53);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.5s;
+.BottomButton {
+  color: black;
+  height: 50px;
+  width: 175px;
 }
-
-.SaveButton:hover {
+.BottomButtonDiv {
+  float: left;
+  position: fixed;
+  bottom: 0;
+}
+.BottomButton:hover {
   background-color: rgb(63, 90, 100);
 }
 
-.DelButton {
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  font-style: normal;
-  font-size: 15px;
-  font-weight: bold;
-  position: fixed;
-  bottom: 15px;
-  left: 20%;
-  border-style: solid;
-  border-radius: 5px;
-  border-color: rgb(63, 90, 100);
-  background-color: rgb(34, 48, 53);
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.5s;
-}
-
-.DelButton:hover {
-  background-color: rgb(63, 90, 100);
-}
 
 
 
@@ -235,4 +194,6 @@
   padding: 8px;
   font-size: 10px;
   color: darkgrey;
+}
+.notebox{
 }
