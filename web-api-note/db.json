@@ -2,14 +2,26 @@
   "notes": [
     {
       "id": 1,
-      "body": "write your memories here",
+      "body": "kebab",
       "title": "This is a new note",
       "date": "27/12/2023"
     },
     {
       "id": 2,
-      "body": "write your memories here hehe",
+      "body": "write your memories here hehessdsdfsdf",
       "title": "This is a second new note",
+      "date": "27/12/2023"
+    },
+    {
+      "id": 3,
+      "body": "write your memories hsdferesdfs",
+      "title": "This is a new notetest",
+      "date": "27/12/2023"
+    },
+    {
+      "id": 4,
+      "body": "write your memories here",
+      "title": "frite",
       "date": "27/12/2023"
     }
   ],

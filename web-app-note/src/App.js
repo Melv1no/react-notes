@@ -3,6 +3,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { FeedPlusIcon } from '@primer/octicons-react';
 import Loader from './components/Loader';
+import showPopup from "./components/Popup";
 class Note {
   constructor(title, body) {
     this.title = title;
@@ -19,7 +20,7 @@ function App() {
   const [editedTitle, setEditedTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const noteTemplate = new Note("This is a new note", "write your memories here");
-
+  const [searchTerm, setSearchTerm] = useState("");
 
   const showLoader = (timeout) => {
     setLoading(true);
@@ -68,6 +69,8 @@ function App() {
           },
           body: JSON.stringify(updatedNotes),
         });
+
+        showPopup('note deleted !');
       } else {
         console.log("An error occurred during the request: @+onDeleteNote");
       }
@@ -117,7 +120,9 @@ function App() {
             body: JSON.stringify(updatedNotes[currentIndex - 1]),
           });
 
+          setCurrentIndex(notes.length);
           setIsEditing(false);
+          showPopup('note saved !');
         } else {
           updatedNotes[currentIndex].body = editedContent;
           updatedNotes[currentIndex].title = editedTitle;
@@ -134,6 +139,8 @@ function App() {
           });
 
           setIsEditing(false);
+
+          showPopup('note saved !');
         }
       } else {
         console.log("notes do not exist");
@@ -144,7 +151,13 @@ function App() {
       console.error('Error saving note:', error);
     }
   };
-
+  const handleSearch = (searchTerm) => {
+    setSearchTerm(searchTerm);
+  };
+  const filteredNotes = notes.filter((note) =>
+    note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.body.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const onClickNote = (id) => {
     showLoader(200);
     const clickedNoteIndex = notes.findIndex((note) => note.id === id);
@@ -156,7 +169,7 @@ function App() {
     console.log("useEffect();");
     const fetchData = async () => {
       try {
-        
+
         console.log("notes fetching");
         const notesResponse = await fetch('/notes');
         const notesData = await notesResponse.json();
@@ -171,7 +184,7 @@ function App() {
       }
     };
     fetchData();
-    
+
   }, []);
   return (
     <>
@@ -180,9 +193,16 @@ function App() {
         <button className="AjoutNote" onClick={onAddNote}>
           <FeedPlusIcon size={32} />
         </button>
+        <div className="SearchBar">
+          <input
+            type="text"
+            placeholder="Search..."
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
         <div className="ProfileName">Hi, {profile.name}</div>
-        {notes && notes.length > 0 ? (
-          notes.slice().reverse().map((note) => (
+        {filteredNotes && filteredNotes.length > 0 ? (
+          filteredNotes.slice().reverse().map((note) => (
             <div className="notebox" key={note.id} onClick={() => onClickNote(note.id)}>
               <div className="Titles">
                 {note.title}
@@ -193,9 +213,10 @@ function App() {
           ))
         ) : (
           <div style={{ textAlign: 'center' }}>
-            Click <a onClick={() => { onAddNote(); }}>here</a> to create your first note!
+            No matching notes found.
           </div>
         )}
+
 
         <div className="BottomButtonDiv">
           {isEditing ? (
@@ -253,18 +274,18 @@ function App() {
           )}
         </div>
       </main>
-      
-      <div>
-      {loading && (
-        <div className="overlay">
-          <Loader />
-        </div>
-      )}
 
-      <div className={`content ${loading ? 'blurred' : ''}`}>
-        
+      <div>
+        {loading && (
+          <div className="overlay">
+            <Loader />
+          </div>
+        )}
+
+        <div className={`content ${loading ? 'blurred' : ''}`}>
+
+        </div>
       </div>
-    </div>
     </>
 
   );
