@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { FeedPlusIcon } from '@primer/octicons-react';
-
+import Loader from './components/Loader';
 class Note {
   constructor(title, body) {
     this.title = title;
@@ -17,14 +17,26 @@ function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [editedTitle, setEditedTitle] = useState("");
+  const [loading, setLoading] = useState(false);
   const noteTemplate = new Note("This is a new note", "write your memories here");
 
+
+  const showLoader = (timeout) => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, timeout);
+  };
+
   const onAddNote = async () => {
+    showLoader(1000);
     setCurrentIndex(notes.length + 1);
     onEditNote(true);
   };
 
   const onDeleteNote = async () => {
+    showLoader(1000);
     if (notes[currentIndex] == null) { return; }
     const confirmed = window.confirm("Are you sure to remove this note ?");
 
@@ -65,6 +77,7 @@ function App() {
   };
 
   const onEditNote = (isNewNote) => {
+    showLoader(1000);
     if (isNewNote == true) {
       setEditedContent(noteTemplate.body);
       setEditedTitle(noteTemplate.title);
@@ -76,6 +89,7 @@ function App() {
   };
 
   const onSaveNote = async () => {
+    showLoader(1000);
     try {
       if (currentIndex !== null) {
         const updatedNotes = [...notes];
@@ -132,6 +146,7 @@ function App() {
   };
 
   const onClickNote = (id) => {
+    showLoader(200);
     const clickedNoteIndex = notes.findIndex((note) => note.id === id);
     setCurrentIndex(clickedNoteIndex);
     setIsEditing(false);
@@ -141,6 +156,7 @@ function App() {
     console.log("useEffect();");
     const fetchData = async () => {
       try {
+        
         console.log("notes fetching");
         const notesResponse = await fetch('/notes');
         const notesData = await notesResponse.json();
@@ -154,10 +170,9 @@ function App() {
         console.error('Erreur lors de la récupération des données :', error);
       }
     };
-
     fetchData();
+    
   }, []);
-
   return (
     <>
       <aside className="Side">
@@ -197,7 +212,6 @@ function App() {
           </button>
         </div>
       </aside>
-
       <main className="Main">
         <div>
           {notes !== null ? (
@@ -239,7 +253,20 @@ function App() {
           )}
         </div>
       </main>
+      
+      <div>
+      {loading && (
+        <div className="overlay">
+          <Loader />
+        </div>
+      )}
+
+      <div className={`content ${loading ? 'blurred' : ''}`}>
+        
+      </div>
+    </div>
     </>
+
   );
 }
 
