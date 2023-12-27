@@ -186,6 +186,30 @@ function App() {
     fetchData();
 
   }, []);
+  const handleKeyDown = (e) => {
+    // Check if the pressed key is the "Escape" key (key code 27)
+    if (e.key === 'Escape') {
+      // Clear the input field by updating the state
+      setSearchTerm('');
+    }
+  };
+  const highlightSearchTerm = (text) => {
+    if (!searchTerm) {
+      return text;
+    }
+  
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
+  };const highlightSearchTermInBody = (body) => {
+    if (!searchTerm) {
+      return body;
+    }
+  
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    return body.replace(regex, (match) => `<span class="highlight">${match}</span>`);
+  };
+  
+  
   return (
     <>
       <aside className="Side">
@@ -197,25 +221,28 @@ function App() {
           <input
             type="text"
             placeholder="Search..."
+            value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="ProfileName">Hi, {profile.name}</div>
         {filteredNotes && filteredNotes.length > 0 ? (
-          filteredNotes.slice().reverse().map((note) => (
-            <div className="notebox" key={note.id} onClick={() => onClickNote(note.id)}>
-              <div className="Titles">
-                {note.title}
-                <div className="Creation">{note.date}</div>
-                <div className="Id">ID: {note.id}</div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div style={{ textAlign: 'center' }}>
-            No matching notes found.
-          </div>
-        )}
+  filteredNotes.slice().reverse().map((note) => (
+    <div className="notebox" key={note.id} onClick={() => onClickNote(note.id)}>
+      <div className="Titles">
+        
+        <div dangerouslySetInnerHTML={{ __html: highlightSearchTerm(note.title) }} />
+        <div className="Creation">{note.date}</div>
+        <div className="Id">ID: {note.id}</div>
+      </div>
+    </div>
+  ))
+) : (
+  <div style={{ textAlign: 'center' }}>
+    No matching notes found.
+  </div>
+)}
 
 
         <div className="BottomButtonDiv">
@@ -255,24 +282,24 @@ function App() {
         </div>
 
         <div>
-          {notes !== null ? (
-            <div className="NotesContent">
-              {isEditing ? (
-                <textarea
-                  className="EditableTextArea"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                />
-              ) : (
-                notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
-                  ? notes[currentIndex]?.body
-                  : "You need to create your first note"
-              )}
-            </div>
-          ) : (
-            <div>no note here</div>
-          )}
-        </div>
+  {notes !== null ? (
+    <div className="NotesContent">
+      {isEditing ? (
+        <textarea
+          className="EditableTextArea"
+          value={editedContent}
+          onChange={(e) => setEditedContent(e.target.value)}
+        />
+      ) : (
+        notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
+          ? <div dangerouslySetInnerHTML={{ __html: highlightSearchTermInBody(notes[currentIndex]?.body) }} />
+          : "You need to create your first note"
+      )}
+    </div>
+  ) : (
+    <div>no note here</div>
+  )}
+</div>
       </main>
 
       <div>

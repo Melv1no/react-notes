@@ -252,3 +252,9 @@ outline: inherit;
   opacity: 0;
   pointer-events: none; 
 }
+.SearchBar input{
+width:100%;
+}.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
