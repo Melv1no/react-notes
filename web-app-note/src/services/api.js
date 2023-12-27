@@ -1,4 +1,4 @@
-import "./App.css";
+import './App.css'
 import React, { useEffect, useState } from "react";
 import { FeedPlusIcon } from '@primer/octicons-react';
 import Loader from './components/Loader';
@@ -7,6 +7,7 @@ import NoteComponent from "./components/NoteComponent";
 import NoteEditor from "./components/NoteEditor";
 import SearchBar from "./components/SearchBar";
 import NotesList from "./components/NotesList";
+import apiService from "./services/apiService"; // Import du service API
 
 class Note {
   constructor(title, body) {
@@ -42,7 +43,9 @@ function App() {
 
   const onDeleteNote = async () => {
     showLoader(1000);
-    if (notes[currentIndex] == null) { return; }
+    if (notes[currentIndex] == null) {
+      return;
+    }
     const confirmed = window.confirm("Are you sure to remove this note ?");
 
     if (!confirmed) {
@@ -50,11 +53,9 @@ function App() {
     }
 
     try {
-      const resp = await fetch(`/notes/${notes[currentIndex].id}`, {
-        method: "DELETE",
-      });
+      const deleted = await apiService.deleteNote(notes[currentIndex].id);
 
-      if (resp.ok) {
+      if (deleted) {
         const updatedNotes = notes.filter((_, index) => index !== currentIndex)
           .map((note, index) => ({ ...note, id: index + 1 }));
 
@@ -88,7 +89,9 @@ function App() {
     if (isNewNote == true) {
       setEditedContent(noteTemplate.body);
       setEditedTitle(noteTemplate.title);
-    } else if (currentIndex == null) { return; } else {
+    } else if (currentIndex == null) {
+      return;
+    } else {
       setEditedContent(notes[currentIndex].body);
       setEditedTitle(notes[currentIndex].title);
     }
@@ -116,13 +119,7 @@ function App() {
 
           setNotes(updatedNotes);
 
-          await fetch(`/notes`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedNotes[currentIndex - 1]),
-          });
+          await apiService.saveNote(updatedNotes[currentIndex - 1]);
 
           setCurrentIndex(notes.length);
           setIsEditing(false);
@@ -134,13 +131,7 @@ function App() {
 
           setNotes(updatedNotes);
 
-          await fetch(`/notes/${updatedNotes[currentIndex].id}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedNotes[currentIndex]),
-          });
+          await apiService.updateNote(updatedNotes[currentIndex].id, updatedNotes[currentIndex]);
 
           setIsEditing(false);
 
@@ -155,6 +146,7 @@ function App() {
       console.error('Error saving note:', error);
     }
   };
+
   const handleSearch = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
@@ -173,10 +165,8 @@ function App() {
     console.log("useEffect();");
     const fetchData = async () => {
       try {
-
         console.log("notes fetching");
-        const notesResponse = await fetch('/notes');
-        const notesData = await notesResponse.json();
+        const notesData = await apiService.getNotes();
         setNotes(notesData);
 
         console.log("profiles fetching");
@@ -188,12 +178,10 @@ function App() {
       }
     };
     fetchData();
-
   }, []);
+
   const handleKeyDown = (e) => {
-    // Check if the pressed key is the "Escape" key (key code 27)
     if (e.key === 'Escape') {
-      // Clear the input field by updating the state
       setSearchTerm('');
     }
   };
@@ -217,11 +205,10 @@ function App() {
   return (
     <>
       <aside className="Side">
-        <div className="TitrePage">Mes notes</div>
-        <div onClick={onAddNote} className="AjoutNote">
-            
-            Add notes <i className="fas fa-plus"></i>
-            </div>
+        <div className="TitrePage">ZiNotes</div>
+        <button className="AjoutNote" onClick={onAddNote}>
+          <FeedPlusIcon size={32} />
+        </button>
         <SearchBar
           searchTerm={searchTerm}
           handleSearch={handleSearch}
