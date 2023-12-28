@@ -7,7 +7,7 @@ import NoteComponent from "./components/NoteComponent";
 import NoteEditor from "./components/NoteEditor";
 import SearchBar from "./components/SearchBar";
 import NotesList from "./components/NotesList";
-import apiService from "./services/apiService"; // Import du service API
+import apiService from "./services/apiService";
 
 class Note {
   constructor(title, body) {

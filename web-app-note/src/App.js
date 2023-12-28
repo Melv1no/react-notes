@@ -7,6 +7,7 @@ import NoteComponent from "./components/NoteComponent";
 import NoteEditor from "./components/NoteEditor";
 import SearchBar from "./components/SearchBar";
 import NotesList from "./components/NotesList";
+import NightModeToggle from "./components/NightModeToggle";
 
 class Note {
   constructor(title, body) {
@@ -216,6 +217,7 @@ function App() {
 
   return (
     <>
+    
       <aside className="Side">
         <div className="TitrePage">Mes notes</div>
         <div onClick={onAddNote} className="AjoutNote">
@@ -227,6 +229,7 @@ function App() {
           handleSearch={handleSearch}
           handleKeyDown={handleKeyDown}
         />
+        <div className="nightmode"><NightModeToggle /></div> 
         <div className="ProfileName">Hi, {profile.name}</div>
         <NotesList
           filteredNotes={filteredNotes}
@@ -244,6 +247,7 @@ function App() {
         />
       </aside>
       <main className="Main">
+        
         <div>
           {notes !== null ? (
             <div className="NotesContentTitle">

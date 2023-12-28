@@ -9,7 +9,100 @@
   padding-bottom: 0px;
   display: flex;
   flex-direction: column;
+  background-color: #d3d3d3;
+}
+.Side.night-mode {
+  position: absolute;
+  width: 350px;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  margin-left: 0px;
+  padding-top: 25px;
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
   background-color: rgb(29, 35, 39);
+}
+
+
+.nightmode{
+  position: fixed;
+  top: 15px;
+  right: 130px;
+}
+
+:root {
+  --light: #d8dbe0;
+  --dark: #28292c;
+  --link: rgb(27, 129, 112);
+  --link-hover: rgb(24, 94, 82);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px; /* Adjust the width as needed */
+}
+
+label {
+  position: absolute;
+  width: 100%;
+  height: 30px; /* Adjust the height as needed */
+  background-color: var(--dark);
+  border-radius: 15px; /* Adjust the border-radius as needed */
+  cursor: pointer;
+}
+
+input {
+  position: absolute;
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  width: 100%;
+  height: 30px; /* Adjust the height as needed */
+  border-radius: 15px; /* Adjust the border-radius as needed */
+  transition: 0.3s;
+}
+
+input:checked ~ .slider {
+  background-color: var(--light);
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  width: 15px; /* Adjust the width as needed */
+  height: 15px; /* Adjust the height as needed */
+  border-radius: 50%;
+  box-shadow: inset 7px -1px 0px 0px var(--light);
+  background-color: var(--dark);
+  transition: 0.3s;
+}
+
+input:checked ~ .slider::before {
+  transform: translateX(20px); /* Adjust the translation as needed */
+  background-color: var(--dark);
+  box-shadow: none;
+}
+
+a {
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  top: 50px; /* Adjust the top position as needed */
+  left: 5px;
+  font-size: 10px;
+  text-decoration: none;
+  color: var(--link);
+  font-weight: bold;
+  text-align: center;
+}
+
+a:hover {
+  color: var(--link-hover);
 }
 
 .Loading {
@@ -49,7 +142,7 @@ padding-top: 5px;
   right: 15px;
 }
 
-.Titles{
+.Notebox.night-mode{
   font-size: 20px;
   font-style: bold;
   cursor: default;
@@ -59,8 +152,18 @@ padding-top: 5px;
   margin-top: 5px;
   background-color: rgb(34, 48, 53);
 }
+.Notebox{
+  font-size: 20px;
+  font-style: bold;
+  cursor: default;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 15px;
+  margin-top: 5px;
+  background-color: rgb(97, 170, 196);
+}
 
-.Titles:hover {
+.Notebox:hover {
   background-color: rgb(63, 90, 100);
   transition: 500ms;
 }
@@ -206,8 +309,7 @@ padding-top: 5px;
   font-size: 10px;
   color: darkgrey;
 }
-.notebox{
-}
+
 .loader-container {
   display: flex;
   align-items: center;
