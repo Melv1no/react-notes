@@ -67,7 +67,7 @@ function App() {
           setCurrentIndex(null);
         }
 
-        await fetch("/update-json", {
+        await fetch("https://web-api-note-a70ef9506447.herokuapp.com/update-json", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -176,12 +176,12 @@ function App() {
       try {
 
         console.log("notes fetching");
-        const notesResponse = await fetch('/notes');
+        const notesResponse = await fetch('https://web-api-note-a70ef9506447.herokuapp.com/notes');
         const notesData = await notesResponse.json();
         setNotes(notesData);
 
         console.log("profiles fetching");
-        const profilesResponse = await fetch('/profiles');
+        const profilesResponse = await fetch('https://web-api-note-a70ef9506447.herokuapp.com/profiles');
         const profilesData = await profilesResponse.json();
         setProfile(profilesData);
       } catch (error) {
