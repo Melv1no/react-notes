@@ -45,6 +45,7 @@ function App() {
   // Function to add a new note
   const onAddNote = async () => {
     showLoader(1000);
+    window.history.replaceState(null, null, '/');
     const newId = notes.length > 0 ? Math.max(...notes.map(note => note.id)) + 1 : 1;
     console.log(newId);
     setCurrentIndex(newId);
