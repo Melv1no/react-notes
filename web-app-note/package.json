@@ -39,5 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:4000"
+  "proxy": "https://web-api-note-a70ef9506447.herokuapp.com/"
 }
