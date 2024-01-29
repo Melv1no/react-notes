@@ -1,10 +1,10 @@
 import React from "react";
 
-const NoteEditor = ({ isEditing, onSaveNote, onEditNote, onDeleteNote, editedTitle, editedContent, onAddNote }) => {
+const NoteEditor = ({ onSaveNote, onEditNote, onDeleteNote,noteEditingStatus }) => {
     return (
 
         <div className="BottomButtonDiv">
-            {isEditing ? (
+            {noteEditingStatus ? (
                 <button className="BottomButton" onClick={onSaveNote}>
                     Save <i className="fas fa-save"></i>
                 </button>
