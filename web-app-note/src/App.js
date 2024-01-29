@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import React, { useEffect, useState } from "react";
 import { FeedPlusIcon } from '@primer/octicons-react';
@@ -37,7 +38,8 @@ function App() {
 
   const onAddNote = async () => {
     showLoader(1000);
-    setCurrentIndex(notes.length + 1);
+    const newId = notes.length > 0 ? Math.max(...notes.map(note => note.id)) + 1 : 1;
+    setCurrentIndex(newId);
     onEditNote(true);
   };
 
@@ -51,7 +53,7 @@ function App() {
     }
 
     try {
-      const resp = await fetch(`/notes/${notes[currentIndex].id}`, {
+      const resp = await fetch(`https://web-api-note-a70ef9506447.herokuapp.com/notes/${notes[currentIndex].id}`, {
         method: "DELETE",
       });
 
@@ -111,13 +113,13 @@ function App() {
           }
           console.log(notes.length);
 
-          updatedNotes[currentIndex - 1].body = editedContent;
+          updatedNotes[updatedNotes.length - 1].body = editedContent;
           updatedNotes[currentIndex - 1].title = editedTitle;
           updatedNotes[currentIndex - 1].date = new Date().toLocaleDateString();
 
           setNotes(updatedNotes);
 
-          await fetch(`/notes`, {
+          await fetch(`https://web-api-note-a70ef9506447.herokuapp.com/notes`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -135,7 +137,7 @@ function App() {
 
           setNotes(updatedNotes);
 
-          await fetch(`/notes/${updatedNotes[currentIndex].id}`, {
+          await fetch(`https://web-api-note-a70ef9506447.herokuapp.com/notes/${updatedNotes[currentIndex].id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -146,6 +148,7 @@ function App() {
           setIsEditing(false);
 
           showPopup('note saved !');
+          onClickNote(updatedNotes[currentIndex].id);
         }
       } else {
         console.log("notes do not exist");
@@ -192,9 +195,7 @@ function App() {
 
   }, []);
   const handleKeyDown = (e) => {
-    // Check if the pressed key is the "Escape" key (key code 27)
     if (e.key === 'Escape') {
-      // Clear the input field by updating the state
       setSearchTerm('');
     }
   };
@@ -214,93 +215,90 @@ function App() {
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     return body.replace(regex, (match) => `<span class="highlight">${match}</span>`);
   };
-
   return (
-    <>
-    
-      <aside className="Side">
-        <div className="TitrePage">Mes notes</div>
-        <div onClick={onAddNote} className="AjoutNote">
-            
-            Add notes <i className="fas fa-plus"></i>
-            </div>
-        <SearchBar
-          searchTerm={searchTerm}
-          handleSearch={handleSearch}
-          handleKeyDown={handleKeyDown}
-        />
-        <div className="nightmode"><NightModeToggle /></div> 
-        <div className="ProfileName">Hi, {profile.name}</div>
-        <NotesList
-          filteredNotes={filteredNotes}
-          onClickNote={onClickNote}
-          highlightSearchTermInBody={highlightSearchTermInBody}
-          highlightSearchTerm={highlightSearchTerm}
-        />
-        <NoteEditor
-          isEditing={isEditing}
-          onSaveNote={onSaveNote}
-          onEditNote={onEditNote}
-          onDeleteNote={onDeleteNote}
-          editedTitle={editedTitle}
-          editedContent={editedContent}
-        />
-      </aside>
-      <main className="Main">
-        
-        <div>
-          {notes !== null ? (
-            <div className="NotesContentTitle">
-              {isEditing ? (
-                <textarea
-                  className="EditableTextTitle"
-                  value={editedTitle}
-                  onChange={(e) => setEditedTitle(e.target.value)}
-                />
-              ) : (
-                (notes[currentIndex]?.title !== null && notes[currentIndex]?.title !== "")
-                  ? notes[currentIndex]?.title
-                  : <div>You have no one note for now</div>
-              )}
-            </div>
-          ) : (
-            <div>no note here</div>
-          )}
-        </div>
-
-        <div>
-          {notes !== null ? (
-            <div className="NotesContent">
-              {isEditing ? (
-                <textarea
-                  className="EditableTextArea"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                />
-              ) : (
-                notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
-                  ? <div dangerouslySetInnerHTML={{ __html: highlightSearchTermInBody(notes[currentIndex]?.body) }} />
-                  : "You need to create your first note"
-              )}
-            </div>
-          ) : (
-            <div>no note here</div>
-          )}
-        </div>
-      </main>
-
+    <Router>
       <div>
-        {loading && (
-          <div className="overlay">
-            <Loader />
+        <aside className="Side">
+          <div className="TitrePage">Mes notes</div>
+          <div onClick={onAddNote} className="AjoutNote">
+            Add notes <i className="fas fa-plus"></i>
           </div>
-        )}
+          <SearchBar
+            searchTerm={searchTerm}
+            handleSearch={handleSearch}
+            handleKeyDown={handleKeyDown}
+          />
+          <div className="nightmode"><NightModeToggle /></div>
+          <div className="ProfileName">Hi, {profile.name}</div>
+          <NotesList
+            filteredNotes={filteredNotes}
+            onClickNote={onClickNote}
+            highlightSearchTermInBody={highlightSearchTermInBody}
+            highlightSearchTerm={highlightSearchTerm}
+          />
+          <NoteEditor
+            isEditing={isEditing}
+            onSaveNote={onSaveNote}
+            onEditNote={onEditNote}
+            onDeleteNote={onDeleteNote}
+            editedTitle={editedTitle}
+            editedContent={editedContent}
+          />
+        </aside>
 
-        <div className={`content ${loading ? 'blurred' : ''}`}>
+        <main className="Main">
+          <div>
+            {notes !== null ? (
+              <div className="NotesContentTitle">
+                {isEditing ? (
+                  <textarea
+                    className="EditableTextTitle"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                  />
+                ) : (
+                  (notes[currentIndex]?.title !== null && notes[currentIndex]?.title !== "")
+                    ? notes[currentIndex]?.title
+                    : <div>You have no one note for now</div>
+                )}
+              </div>
+            ) : (
+              <div>no note here</div>
+            )}
+          </div>
+          <div>
+            {notes !== null ? (
+              <div className="NotesContent">
+                {isEditing ? (
+                  <textarea
+                    className="EditableTextArea"
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                  />
+                ) : (
+                  notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
+                    ? <div dangerouslySetInnerHTML={{ __html: highlightSearchTermInBody(notes[currentIndex]?.body) }} />
+                    : "You need to create your first note"
+                )}
+              </div>
+            ) : (
+              <div>no note here</div>
+            )}
+          </div>
+        </main>
 
+        <div>
+          {loading && (
+            <div className="overlay">
+              <Loader />
+            </div>
+          )}
+
+          <div className={`content ${loading ? 'blurred' : ''}`}>
+          </div>
         </div>
       </div>
-    </>
+    </Router>
   );
 }
 
