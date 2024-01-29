@@ -91,6 +91,8 @@ function App() {
     } catch (error) {
       console.error("An error occurred during the deleteNote request:", error);
     }
+    
+    window.history.replaceState(null, null, '/');
   };
   
 
@@ -171,6 +173,8 @@ function App() {
       console.error('Error saving note:', error);
     }
     setNoteEditingStatus(false);
+    
+    window.history.replaceState(null, null, '/');
   };
 
   // Function to handle search term changes
