@@ -6,7 +6,6 @@ const NoteComponent = ({ note, onClickNote, highlightSearchTermInBody, highlight
   return (
     <div key={note.id} onClick={() => onClickNote(note.id)}>
       <div className="Notebox">
-        <Link to={`/note/${note.id}`}>{note.title}</Link>
         <div dangerouslySetInnerHTML={{ __html: highlightSearchTerm(note.title) }} />
         <div className="Creation">{note.date}</div>
         <div className="Id">ID: {note.id}</div>
