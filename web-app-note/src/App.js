@@ -1,10 +1,8 @@
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import React, { useEffect, useState } from "react";
-import { FeedPlusIcon } from '@primer/octicons-react';
 import Loader from './components/Loader';
 import showPopup from "./components/Popup";
-import NoteComponent from "./components/NoteComponent";
 import NoteEditor from "./components/NoteEditor";
 import SearchBar from "./components/SearchBar";
 import NotesList from "./components/NotesList";
@@ -27,6 +25,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const noteTemplate = new Note("This is a new note", "write your memories here");
   const [searchTerm, setSearchTerm] = useState("");
+  const [noteEditingStatus, setNoteEditingStatus] = useState({});
 
   const showLoader = (timeout) => {
     setLoading(true);
@@ -88,7 +87,7 @@ function App() {
 
   const onEditNote = (isNewNote) => {
     showLoader(1000);
-    if (isNewNote == true) {
+    if (isNewNote) {
       setEditedContent(noteTemplate.body);
       setEditedTitle(noteTemplate.title);
     } else if (currentIndex == null) { return; } else {
@@ -96,6 +95,13 @@ function App() {
       setEditedTitle(notes[currentIndex].title);
     }
     setIsEditing(true);
+
+    if (currentIndex !== null) {
+      setNoteEditingStatus((prevStatus) => ({
+        ...prevStatus,
+        [currentIndex + 1]: true,
+      }));
+    }
   };
 
   const onSaveNote = async () => {
@@ -104,8 +110,6 @@ function App() {
       if (currentIndex !== null) {
         const updatedNotes = [...notes];
         if (currentIndex > updatedNotes.length) {
-          const updatedNotes = [...notes];
-
           console.log(currentIndex);
           console.log(updatedNotes.length);
           if (currentIndex > updatedNotes.length) {
@@ -146,7 +150,7 @@ function App() {
           });
 
           setIsEditing(false);
-
+          setNoteEditingStatus(false);
           showPopup('note saved !');
           onClickNote(updatedNotes[currentIndex].id);
         }
@@ -159,13 +163,25 @@ function App() {
       console.error('Error saving note:', error);
     }
   };
+
   const handleSearch = (searchTerm) => {
     setSearchTerm(searchTerm);
   };
+
   const filteredNotes = notes.filter((note) =>
     note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.body.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const onClickHome = () => {
+    showLoader(200);
+ 
+    setCurrentIndex(null);
+    setIsEditing(false);
+    setSearchTerm("");
+    setNoteEditingStatus(false);
+  };
+
   const onClickNote = (id) => {
     showLoader(200);
     const clickedNoteIndex = notes.findIndex((note) => note.id === id);
@@ -174,10 +190,15 @@ function App() {
   };
 
   useEffect(() => {
+    const saveInterval = setInterval(() => {
+      if (currentIndex !== null) {
+        onSaveNote(); 
+      }
+    }, 30000); 
+
     console.log("useEffect();");
     const fetchData = async () => {
       try {
-
         console.log("notes fetching");
         const notesResponse = await fetch('https://web-api-note-a70ef9506447.herokuapp.com/notes');
         const notesData = await notesResponse.json();
@@ -194,11 +215,13 @@ function App() {
     fetchData();
 
   }, []);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Escape') {
       setSearchTerm('');
     }
   };
+
   const highlightSearchTerm = (text) => {
     if (!searchTerm) {
       return text;
@@ -207,6 +230,7 @@ function App() {
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     return text.replace(regex, (match) => `<span class="highlight">${match}</span>`);
   };
+
   const highlightSearchTermInBody = (body) => {
     if (!searchTerm) {
       return body;
@@ -215,11 +239,12 @@ function App() {
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     return body.replace(regex, (match) => `<span class="highlight">${match}</span>`);
   };
+
   return (
     <Router>
       <div>
         <aside className="Side">
-          <div className="TitrePage">Mes notes</div>
+          <div className="TitrePage" onClick={onClickHome}>Mes notes</div>
           <div onClick={onAddNote} className="AjoutNote">
             Add notes <i className="fas fa-plus"></i>
           </div>
@@ -235,6 +260,9 @@ function App() {
             onClickNote={onClickNote}
             highlightSearchTermInBody={highlightSearchTermInBody}
             highlightSearchTerm={highlightSearchTerm}
+            isEditing={isEditing}
+            currentnoteid={currentIndex}
+            noteEditingStatus={noteEditingStatus} 
           />
           <NoteEditor
             isEditing={isEditing}
@@ -278,7 +306,7 @@ function App() {
                 ) : (
                   notes[currentIndex]?.body !== null && notes[currentIndex]?.body !== undefined
                     ? <div dangerouslySetInnerHTML={{ __html: highlightSearchTermInBody(notes[currentIndex]?.body) }} />
-                    : "You need to create your first note"
+                    : "Create a new note or click on existing note."
                 )}
               </div>
             ) : (
